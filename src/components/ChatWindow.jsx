@@ -716,12 +716,15 @@ const ChatWindow = ({ selectedUser, onBack, isMobile = false }) => {
             </div>
 
             {/* Video Call */}
-            <VideoCall
-                isOpen={showCall}
-                onClose={() => setShowCall(false)}
-                callType={callType}
-                remoteUser={selectedUser}
-            />
+            {/* VideoCall - Only mount when active */}
+            {showCall && (
+                <VideoCall
+                    isOpen={showCall}
+                    onClose={() => setShowCall(false)}
+                    callType={callType}
+                    remoteUser={selectedUser}
+                />
+            )}
         </div>
     );
 };

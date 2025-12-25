@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState, useRef } from 'react';
 import { supabase } from '../services/supabase';
+import { initOneSignal, logoutOneSignal } from '../utils/oneSignal';
 
 const AuthContext = createContext();
 
@@ -48,6 +49,8 @@ export const AuthProvider = ({ children }) => {
                     // Set online immediately after getting session
                     if (currentUser) {
                         updateOnlineStatus(true, currentUser.id);
+                        // Initialize OneSignal for push notifications
+                        initOneSignal(currentUser.id);
                     }
                 }
             } catch (err) {

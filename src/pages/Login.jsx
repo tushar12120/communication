@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
-import { MessageSquare, Mail, Lock } from 'lucide-react';
+import { MessageSquare, Mail, Lock, Download } from 'lucide-react';
 
 const Login = () => {
     const { signIn } = useAuth();
@@ -10,6 +10,36 @@ const Login = () => {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const [deferredPrompt, setDeferredPrompt] = useState(null);
+
+    useEffect(() => {
+        const handleBeforeInstallPrompt = (e) => {
+            // Prevent the mini-infobar from appearing on mobile
+            e.preventDefault();
+            // Stash the event so it can be triggered later.
+            setDeferredPrompt(e);
+        };
+
+        window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+        return () => {
+            window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+        };
+    }, []);
+
+    const handleInstallClick = async () => {
+        if (!deferredPrompt) return;
+
+        // Show the install prompt
+        deferredPrompt.prompt();
+
+        // Wait for the user to respond to the prompt
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log(`User response to the install prompt: ${outcome}`);
+
+        // We've used the prompt, and can't use it again, throw it away
+        setDeferredPrompt(null);
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -62,6 +92,32 @@ const Login = () => {
                 <p style={{ textAlign: 'center', color: 'var(--secondary)', marginBottom: '30px', fontSize: '14px' }}>
                     Sign in to continue messaging
                 </p>
+
+                {/* PWA Install Button */}
+                {deferredPrompt && (
+                    <button
+                        onClick={handleInstallClick}
+                        style={{
+                            width: '100%',
+                            padding: '12px',
+                            backgroundColor: '#e9edef',
+                            color: '#111b21',
+                            border: 'none',
+                            borderRadius: '8px',
+                            fontSize: '15px',
+                            fontWeight: 600,
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '10px',
+                            marginBottom: '20px'
+                        }}
+                    >
+                        <Download size={20} />
+                        Install App
+                    </button>
+                )}
 
                 {error && (
                     <div style={{

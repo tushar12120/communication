@@ -70,12 +70,15 @@ function App() {
 
   const rejectCall = async () => {
     callSounds.stop();
-    const rejectChannel = supabase.channel(`incoming_calls_${incomingCall?.caller?.id}`);
-    await rejectChannel.subscribe();
-    rejectChannel.send({
+
+    // Send rejection on the call signaling channel
+    const channelName = `call_${[user.id, incomingCall?.caller?.id].sort().join('_')}`;
+    const signalChannel = supabase.channel(channelName);
+    await signalChannel.subscribe();
+    await signalChannel.send({
       type: 'broadcast',
-      event: 'call-rejected',
-      payload: { from: user.id }
+      event: 'signal',
+      payload: { type: 'call-rejected', data: {}, from: user.id }
     });
 
     setShowIncomingCall(false);

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '../services/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import callSounds from '../utils/callSounds';
+import { sendCallNotification } from '../utils/oneSignal';
 import {
     Phone,
     PhoneOff,
@@ -127,6 +128,9 @@ const VideoCall = ({
                     }
                 });
                 console.log('Sent incoming call to:', remoteUser.id);
+
+                // Send push notification for background/closed app
+                sendCallNotification(remoteUser.id, user.user_metadata?.full_name || 'Someone', callType);
             }
 
         } catch (err) {
@@ -171,6 +175,8 @@ const VideoCall = ({
 
                     case 'call-rejected':
                     case 'call-ended':
+                        callSounds.stop();
+                        callSounds.playEnded();
                         endCall();
                         break;
                 }

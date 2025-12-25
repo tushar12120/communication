@@ -5,7 +5,7 @@ import './index.css'
 import App from './App.jsx'
 import Login from './pages/Login.jsx'
 import Signup from './pages/Signup.jsx'
-import { AuthProvider, useAuth } from './contexts/AuthContext.jsx'
+import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { supabase } from './services/supabase.js'
 
 // Error Boundary
