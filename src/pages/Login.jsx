@@ -94,9 +94,11 @@ const Login = () => {
                 </p>
 
                 {/* PWA Install Button */}
-                {deferredPrompt && (
-                    <button
-                        onClick={handleInstallClick}
+                {/* Android APK Download Button */}
+                {/Android/i.test(navigator.userAgent) && (
+                    <a
+                        href="/app.apk"
+                        download="ChatVerse.apk"
                         style={{
                             width: '100%',
                             padding: '12px',
@@ -111,12 +113,14 @@ const Login = () => {
                             alignItems: 'center',
                             justifyContent: 'center',
                             gap: '10px',
-                            marginBottom: '20px'
+                            marginBottom: '20px',
+                            textDecoration: 'none',
+                            boxSizing: 'border-box'
                         }}
                     >
                         <Download size={20} />
-                        Install App
-                    </button>
+                        Download Android App
+                    </a>
                 )}
 
                 {error && (
