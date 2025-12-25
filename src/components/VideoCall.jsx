@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '../services/supabase';
 import { useAuth } from '../contexts/AuthContext';
+import callSounds from '../utils/callSounds';
 import {
     Phone,
     PhoneOff,
@@ -104,6 +105,10 @@ const VideoCall = ({
             } else {
                 // Outgoing call - create and send offer
                 setCallState('calling');
+
+                // Play ringback tone for caller
+                callSounds.playRingback();
+
                 const offer = await peerConnection.current.createOffer();
                 await peerConnection.current.setLocalDescription(offer);
                 sendSignal('offer', offer);
@@ -159,6 +164,8 @@ const VideoCall = ({
                         break;
 
                     case 'call-accepted':
+                        callSounds.stop();
+                        callSounds.playConnected();
                         setCallState('connected');
                         break;
 
@@ -198,6 +205,8 @@ const VideoCall = ({
     };
 
     const endCall = () => {
+        callSounds.stop();
+        callSounds.playEnded();
         sendSignal('call-ended', {});
         cleanup();
         setCallState('ended');

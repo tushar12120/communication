@@ -4,6 +4,7 @@ import ChatWindow from './components/ChatWindow';
 import VideoCall from './components/VideoCall';
 import { useAuth } from './contexts/AuthContext';
 import { supabase } from './services/supabase';
+import callSounds from './utils/callSounds';
 import { Phone, Video, PhoneOff, X } from 'lucide-react';
 
 function App() {
@@ -49,6 +50,9 @@ function App() {
           });
           setIncomingOffer(payload.offer);
           setShowIncomingCall(true);
+
+          // Play ringtone for receiver
+          callSounds.playRingtone();
         }
       })
       .subscribe();
@@ -59,11 +63,13 @@ function App() {
   }, [user, incomingCall]);
 
   const acceptCall = () => {
+    callSounds.stop();
     setCallAccepted(true);
     setShowIncomingCall(false);
   };
 
   const rejectCall = async () => {
+    callSounds.stop();
     const rejectChannel = supabase.channel(`incoming_calls_${incomingCall?.caller?.id}`);
     await rejectChannel.subscribe();
     rejectChannel.send({
