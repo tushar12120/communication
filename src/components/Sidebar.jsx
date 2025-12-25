@@ -47,7 +47,7 @@ const Avatar = ({ src, name, size = 45 }) => {
   );
 };
 
-const Sidebar = ({ onSelectUser, selectedUser }) => {
+const Sidebar = ({ onSelectUser, selectedUser, isMobile = false }) => {
   const { user, signOut } = useAuth();
   const [contacts, setContacts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -169,8 +169,8 @@ const Sidebar = ({ onSelectUser, selectedUser }) => {
 
   return (
     <aside style={{
-      width: '380px',
-      borderRight: '1px solid rgba(134, 150, 160, 0.15)',
+      width: isMobile ? '100%' : '380px',
+      borderRight: isMobile ? 'none' : '1px solid rgba(134, 150, 160, 0.15)',
       display: 'flex',
       flexDirection: 'column',
       backgroundColor: 'var(--panel-background)',

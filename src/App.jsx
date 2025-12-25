@@ -9,12 +9,22 @@ import { Phone, Video, PhoneOff, X } from 'lucide-react';
 function App() {
   const { user } = useAuth();
   const [selectedUser, setSelectedUser] = useState(null);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
   // Incoming call state
   const [incomingCall, setIncomingCall] = useState(null);
   const [showIncomingCall, setShowIncomingCall] = useState(false);
   const [incomingOffer, setIncomingOffer] = useState(null);
   const [callAccepted, setCallAccepted] = useState(false);
+
+  // Handle window resize for responsive design
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Listen for incoming calls
   useEffect(() => {
@@ -26,7 +36,6 @@ function App() {
       .on('broadcast', { event: 'incoming-call' }, async ({ payload }) => {
         console.log('Incoming call received:', payload);
         if (payload.to === user.id && !incomingCall) {
-          // Fetch caller info
           const { data: caller } = await supabase
             .from('profiles')
             .select('*')
@@ -40,10 +49,6 @@ function App() {
           });
           setIncomingOffer(payload.offer);
           setShowIncomingCall(true);
-
-          // Play ringtone (optional)
-          // const audio = new Audio('/ringtone.mp3');
-          // audio.play();
         }
       })
       .subscribe();
@@ -59,7 +64,6 @@ function App() {
   };
 
   const rejectCall = async () => {
-    // Send rejection signal
     const rejectChannel = supabase.channel(`incoming_calls_${incomingCall?.caller?.id}`);
     await rejectChannel.subscribe();
     rejectChannel.send({
@@ -77,6 +81,11 @@ function App() {
     setCallAccepted(false);
     setIncomingCall(null);
     setIncomingOffer(null);
+  };
+
+  // Go back to sidebar on mobile
+  const handleBack = () => {
+    setSelectedUser(null);
   };
 
   return (
@@ -101,8 +110,20 @@ function App() {
         display: 'none'
       }}></div>
 
-      <Sidebar onSelectUser={setSelectedUser} selectedUser={selectedUser} />
-      <ChatWindow selectedUser={selectedUser} />
+      {/* Mobile: Show either Sidebar or ChatWindow */}
+      {/* Desktop: Show both side by side */}
+      {isMobile ? (
+        selectedUser ? (
+          <ChatWindow selectedUser={selectedUser} onBack={handleBack} isMobile={true} />
+        ) : (
+          <Sidebar onSelectUser={setSelectedUser} selectedUser={selectedUser} isMobile={true} />
+        )
+      ) : (
+        <>
+          <Sidebar onSelectUser={setSelectedUser} selectedUser={selectedUser} />
+          <ChatWindow selectedUser={selectedUser} />
+        </>
+      )}
 
       {/* Incoming Call Modal */}
       {showIncomingCall && incomingCall && (
@@ -126,7 +147,6 @@ function App() {
             color: 'white',
             minWidth: '300px'
           }}>
-            {/* Caller Avatar */}
             <div style={{
               width: '100px',
               height: '100px',
@@ -150,7 +170,6 @@ function App() {
               Incoming {incomingCall.callType === 'video' ? 'Video' : 'Voice'} Call...
             </p>
 
-            {/* Call Actions */}
             <div style={{ display: 'flex', justifyContent: 'center', gap: '30px' }}>
               <button
                 onClick={rejectCall}
@@ -191,7 +210,7 @@ function App() {
         </div>
       )}
 
-      {/* Active Call Screen (when accepted) */}
+      {/* Active Call Screen */}
       {callAccepted && incomingCall && (
         <VideoCall
           isOpen={true}

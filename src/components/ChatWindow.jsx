@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../services/supabase';
-import { Paperclip, Smile, Mic, Send, MoreVertical, Search, Phone, Video, Check, CheckCheck, MessageSquare, X, Trash2, Image, Download } from 'lucide-react';
+import { Paperclip, Smile, Mic, Send, MoreVertical, Search, Phone, Video, Check, CheckCheck, MessageSquare, X, Trash2, Image, Download, ArrowLeft } from 'lucide-react';
 import EmojiPicker from 'emoji-picker-react';
 import VideoCall from './VideoCall';
 
@@ -40,7 +40,7 @@ const Avatar = ({ src, name, size = 40 }) => {
     );
 };
 
-const ChatWindow = ({ selectedUser }) => {
+const ChatWindow = ({ selectedUser, onBack, isMobile = false }) => {
     const { user } = useAuth();
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
@@ -388,6 +388,22 @@ const ChatWindow = ({ selectedUser }) => {
                 flexShrink: 0
             }}>
                 <div style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+                    {/* Back button for mobile */}
+                    {isMobile && onBack && (
+                        <button
+                            onClick={onBack}
+                            style={{
+                                background: 'transparent',
+                                border: 'none',
+                                color: 'var(--icon)',
+                                cursor: 'pointer',
+                                marginRight: '10px',
+                                padding: '5px'
+                            }}
+                        >
+                            <ArrowLeft size={24} />
+                        </button>
+                    )}
                     <div style={{ position: 'relative' }}>
                         <Avatar src={selectedUser.avatar_url} name={selectedUser.full_name} size={40} />
                         {selectedUser.is_online && (
