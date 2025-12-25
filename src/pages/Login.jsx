@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 import { MessageSquare, Mail, Lock, Download } from 'lucide-react';
+import { Capacitor } from '@capacitor/core';
 
 const Login = () => {
     const { signIn } = useAuth();
@@ -11,6 +12,9 @@ const Login = () => {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const [deferredPrompt, setDeferredPrompt] = useState(null);
+
+    // Check if running natively (in the APK)
+    const isNative = Capacitor.isNativePlatform();
 
     useEffect(() => {
         const handleBeforeInstallPrompt = (e) => {
@@ -94,8 +98,8 @@ const Login = () => {
                 </p>
 
                 {/* PWA Install Button */}
-                {/* Android APK Download Button */}
-                {/Android/i.test(navigator.userAgent) && (
+                {/* Android APK Download Button - Only show if on Android Browser (not in App) */}
+                {/Android/i.test(navigator.userAgent) && !isNative && (
                     <a
                         href="/ChatVerse.apk"
                         download="ChatVerse.apk"

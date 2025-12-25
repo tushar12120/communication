@@ -3,16 +3,20 @@ import OneSignal from 'react-onesignal';
 let initialized = false;
 
 export const initOneSignal = async (userId) => {
-    if (initialized) {
-        console.log('OneSignal already initialized');
+    if (initialized) return;
+
+    const appId = import.meta.env.VITE_ONESIGNAL_APP_ID;
+    if (!appId) {
+        alert("CRITICAL ERROR: VITE_ONESIGNAL_APP_ID is missing! configure it in Vercel.");
+        console.error("VITE_ONESIGNAL_APP_ID is missing");
         return;
     }
 
     // Check for Native SDK (Cordova/Capacitor)
     if (window.plugins && window.plugins.OneSignal) {
         try {
-            console.log('Initializing Native OneSignal SDK...');
-            window.plugins.OneSignal.setAppId(import.meta.env.VITE_ONESIGNAL_APP_ID);
+            // alert("Initializing Native OneSignal..."); // Uncomment for debug
+            window.plugins.OneSignal.setAppId(appId);
 
             // Notification Received Handler
             window.plugins.OneSignal.setNotificationWillShowInForegroundHandler(function (notificationReceivedEvent) {
