@@ -107,8 +107,12 @@ export const sendCallNotification = async (receiverId, callerName, callType) => 
                     type: 'incoming_call',
                     callType: callType
                 },
-                ttl: 30,
+                // Android Specific Settings for Calls
+                android_channel_id: "f982ec86-7d73-48a6-aff0-37e9e7f48ebc", // ID from OneSignal Dashboard
                 priority: 10,
+                android_visibility: 1, // Public (show on lock screen)
+                android_category: "call", // Helps with Do Not Disturb
+                ttl: 30,
                 chrome_web_badge: '/icons/icon.svg',
                 chrome_web_icon: '/icons/icon.svg'
             })
