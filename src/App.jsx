@@ -6,6 +6,7 @@ import { useAuth } from './contexts/AuthContext';
 import { supabase } from './services/supabase';
 import callSounds from './utils/callSounds';
 import { Phone, Video, PhoneOff, X } from 'lucide-react';
+import { Capacitor } from '@capacitor/core';
 
 function App() {
   const { user } = useAuth();
@@ -17,6 +18,23 @@ function App() {
   const [showIncomingCall, setShowIncomingCall] = useState(false);
   const [incomingOffer, setIncomingOffer] = useState(null);
   const [callAccepted, setCallAccepted] = useState(false);
+
+  // Force Request Permissions on App Start (Native Android)
+  useEffect(() => {
+    const requestNativePermissions = async () => {
+      if (Capacitor.isNativePlatform()) {
+        console.log("App started on Native Android. Requesting permissions...");
+
+        // 1. OneSignal Notification Permission
+        if (window.plugins && window.plugins.OneSignal) {
+          window.plugins.OneSignal.promptForPushNotificationsWithUserResponse((accepted) => {
+            console.log("User Native Notification Choice: " + accepted);
+          });
+        }
+      }
+    };
+    requestNativePermissions();
+  }, []);
 
   // Handle window resize for responsive design
   useEffect(() => {
