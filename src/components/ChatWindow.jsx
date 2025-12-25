@@ -375,19 +375,21 @@ const ChatWindow = ({ selectedUser, onBack, isMobile = false }) => {
             display: 'flex',
             flexDirection: 'column',
             backgroundColor: '#0b141a',
-            height: '100vh'
+            height: '100vh',
+            width: isMobile ? '100%' : 'auto'
         }}>
             {/* Header */}
             <div style={{
-                height: '60px',
+                minHeight: '60px',
                 backgroundColor: 'var(--panel-header-background)',
-                padding: '10px 16px',
+                padding: isMobile ? '10px 10px' : '10px 16px',
+                paddingTop: isMobile ? 'max(10px, env(safe-area-inset-top))' : '10px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 flexShrink: 0
             }}>
-                <div style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+                <div style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', flex: 1, minWidth: 0 }}>
                     {/* Back button for mobile */}
                     {isMobile && onBack && (
                         <button
@@ -397,14 +399,15 @@ const ChatWindow = ({ selectedUser, onBack, isMobile = false }) => {
                                 border: 'none',
                                 color: 'var(--icon)',
                                 cursor: 'pointer',
-                                marginRight: '10px',
-                                padding: '5px'
+                                marginRight: '8px',
+                                padding: '5px',
+                                flexShrink: 0
                             }}
                         >
                             <ArrowLeft size={24} />
                         </button>
                     )}
-                    <div style={{ position: 'relative' }}>
+                    <div style={{ position: 'relative', flexShrink: 0 }}>
                         <Avatar src={selectedUser.avatar_url} name={selectedUser.full_name} size={40} />
                         {selectedUser.is_online && (
                             <div style={{
@@ -419,11 +422,21 @@ const ChatWindow = ({ selectedUser, onBack, isMobile = false }) => {
                             }} />
                         )}
                     </div>
-                    <div style={{ marginLeft: '15px' }}>
-                        <div style={{ color: 'var(--text-primary)', fontSize: '16px', fontWeight: 500 }}>
+                    <div style={{ marginLeft: '12px', minWidth: 0, flex: 1 }}>
+                        <div style={{
+                            color: 'var(--text-primary)',
+                            fontSize: isMobile ? '15px' : '16px',
+                            fontWeight: 500,
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap'
+                        }}>
                             {selectedUser.full_name || 'Unknown'}
                         </div>
-                        <div style={{ color: otherTyping ? '#00a884' : (selectedUser.is_online ? '#00a884' : 'var(--secondary)'), fontSize: '12px' }}>
+                        <div style={{
+                            color: otherTyping ? '#00a884' : (selectedUser.is_online ? '#00a884' : 'var(--secondary)'),
+                            fontSize: '12px'
+                        }}>
                             {otherTyping
                                 ? 'typing...'
                                 : selectedUser.is_online
@@ -435,10 +448,10 @@ const ChatWindow = ({ selectedUser, onBack, isMobile = false }) => {
                     </div>
                 </div>
 
-                <div style={{ display: 'flex', gap: '22px', color: 'var(--icon)' }}>
+                <div style={{ display: 'flex', gap: isMobile ? '15px' : '22px', color: 'var(--icon)', flexShrink: 0 }}>
                     <Video size={22} style={{ cursor: 'pointer', opacity: 0.85 }} onClick={() => handleCall('video')} />
                     <Phone size={22} style={{ cursor: 'pointer', opacity: 0.85 }} onClick={() => handleCall('audio')} />
-                    <Search size={22} style={{ opacity: 0.85 }} />
+                    {!isMobile && <Search size={22} style={{ opacity: 0.85 }} />}
                     <MoreVertical size={22} style={{ opacity: 0.85 }} />
                 </div>
             </div>
@@ -446,7 +459,7 @@ const ChatWindow = ({ selectedUser, onBack, isMobile = false }) => {
             {/* Messages Area */}
             <div style={{
                 flex: 1,
-                padding: '20px 60px',
+                padding: isMobile ? '15px 12px' : '20px 60px',
                 overflowY: 'auto',
                 backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23182229\' fill-opacity=\'0.4\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")',
                 backgroundColor: '#0b141a'
