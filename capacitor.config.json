@@ -1,5 +1,9 @@
 {
   "appId": "com.chatverse.app",
   "appName": "ChatVerse",
-  "webDir": "dist"
+  "webDir": "dist",
+  "server": {
+    "url": "https://chatverse-delta.vercel.app/",
+    "cleartext": true
+  }
 }
