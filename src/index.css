@@ -1,0 +1,50 @@
+:root {
+  --app-height: 100vh;
+  
+  /* Light Theme */
+  --startup-background: #f0f2f5;
+  --conversation-panel-background: #efeae2;
+  --background-default: #111b21; /* Dark by default for modern feel, or switch to light */
+  --panel-header-background: #202c33;
+  --panel-background: #111b21;
+  --incoming-background: #202c33;
+  --outgoing-background: #005c4b;
+  --primary: #00a884;
+  --primary-strong: #008f6f;
+  --secondary: #8696a0;
+  --secondary-lighter: #aebac1;
+  --system-message-text: #8696a0;
+  --icon: #aebac1;
+  --inverse: #111b21;
+  --text-primary: #e9edef;
+  --text-secondary: #8696a0;
+}
+
+/* We will default to Dark Mode for "WOW" factor as per instructions */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  background-color: var(--background-default);
+  color: var(--text-primary);
+  height: 100vh;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  height: 100%;
+}
+
+::-webkit-scrollbar {
+  width: 6px !important;
+  height: 6px !important;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+::-webkit-scrollbar-track {
+  background-color: transparent;
+}
