@@ -1,0 +1,91 @@
+const CACHE_NAME = 'chatverse-v1';
+const urlsToCache = [
+    '/',
+    '/index.html',
+    '/manifest.json'
+];
+
+// Install Service Worker
+self.addEventListener('install', (event) => {
+    event.waitUntil(
+        caches.open(CACHE_NAME)
+            .then((cache) => {
+                console.log('Opened cache');
+                return cache.addAll(urlsToCache);
+            })
+    );
+    self.skipWaiting();
+});
+
+// Activate Service Worker
+self.addEventListener('activate', (event) => {
+    event.waitUntil(
+        caches.keys().then((cacheNames) => {
+            return Promise.all(
+                cacheNames.map((cacheName) => {
+                    if (cacheName !== CACHE_NAME) {
+                        console.log('Deleting old cache:', cacheName);
+                        return caches.delete(cacheName);
+                    }
+                })
+            );
+        })
+    );
+    self.clients.claim();
+});
+
+// Fetch - Network First Strategy
+self.addEventListener('fetch', (event) => {
+    // Skip non-GET requests
+    if (event.request.method !== 'GET') return;
+
+    // Skip supabase API calls - always fetch fresh
+    if (event.request.url.includes('supabase.co')) {
+        return;
+    }
+
+    event.respondWith(
+        fetch(event.request)
+            .then((response) => {
+                // Clone the response
+                const responseToCache = response.clone();
+
+                caches.open(CACHE_NAME)
+                    .then((cache) => {
+                        cache.put(event.request, responseToCache);
+                    });
+
+                return response;
+            })
+            .catch(() => {
+                // If network fails, try cache
+                return caches.match(event.request);
+            })
+    );
+});
+
+// Push Notifications (for future use)
+self.addEventListener('push', (event) => {
+    const options = {
+        body: event.data?.text() || 'New message received',
+        icon: '/icons/icon-192x192.png',
+        badge: '/icons/icon-72x72.png',
+        vibrate: [100, 50, 100],
+        data: {
+            dateOfArrival: Date.now(),
+            primaryKey: 1
+        }
+    };
+
+    event.waitUntil(
+        self.registration.showNotification('ChatVerse', options)
+    );
+});
+
+// Notification click handler
+self.addEventListener('notificationclick', (event) => {
+    event.notification.close();
+    event.waitUntil(
+        clients.openWindow('/')
+    );
+});
