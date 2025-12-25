@@ -1,4 +1,4 @@
-const CACHE_NAME = 'chatverse-v1.9.2';
+const CACHE_NAME = 'chatverse-v1.9.3';
 const urlsToCache = [
     '/',
     '/index.html',

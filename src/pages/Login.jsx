@@ -97,7 +97,7 @@ const Login = () => {
                 {/* Android APK Download Button */}
                 {/Android/i.test(navigator.userAgent) && (
                     <a
-                        href="/app.apk"
+                        href="/ChatVerse.apk"
                         download="ChatVerse.apk"
                         style={{
                             width: '100%',
