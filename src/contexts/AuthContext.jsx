@@ -50,7 +50,12 @@ export const AuthProvider = ({ children }) => {
                     if (currentUser) {
                         updateOnlineStatus(true, currentUser.id);
                         // Initialize OneSignal for push notifications
-                        initOneSignal(currentUser.id);
+                        try {
+                            console.log('Initializing OneSignal...');
+                            await initOneSignal(currentUser.id);
+                        } catch (osError) {
+                            console.error('OneSignal Init Error:', osError);
+                        }
                     }
                 }
             } catch (err) {
