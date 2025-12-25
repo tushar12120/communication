@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../services/supabase';
-import { LogOut, Search, MessageSquarePlus, MoreVertical, CircleDashed, User } from 'lucide-react';
+import { LogOut, Search, MessageSquarePlus, MoreVertical, CircleDashed, User, Bell } from 'lucide-react';
+import { initOneSignal } from '../utils/oneSignal';
 import AddContactModal from './AddContactModal';
 import StatusPage from '../pages/StatusPage';
 import ProfilePage from '../pages/ProfilePage';
