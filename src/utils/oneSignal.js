@@ -3,8 +3,47 @@ import OneSignal from 'react-onesignal';
 let initialized = false;
 
 export const initOneSignal = async (userId) => {
-    if (initialized || !import.meta.env.VITE_ONESIGNAL_APP_ID) {
-        console.log('OneSignal already initialized or no App ID');
+    if (initialized) {
+        console.log('OneSignal already initialized');
+        return;
+    }
+
+    // Check for Native SDK (Cordova/Capacitor)
+    if (window.plugins && window.plugins.OneSignal) {
+        try {
+            console.log('Initializing Native OneSignal SDK...');
+            window.plugins.OneSignal.setAppId(import.meta.env.VITE_ONESIGNAL_APP_ID);
+
+            // Notification Received Handler
+            window.plugins.OneSignal.setNotificationWillShowInForegroundHandler(function (notificationReceivedEvent) {
+                console.log("Notification received:", notificationReceivedEvent);
+                notificationReceivedEvent.complete(notificationReceivedEvent.getNotification());
+            });
+
+            // Notification Opened Handler
+            window.plugins.OneSignal.setNotificationOpenedHandler(function (notification) {
+                console.log("Notification opened:", notification);
+            });
+
+            // Login Native User
+            if (userId) {
+                window.plugins.OneSignal.login(userId);
+            }
+
+            window.plugins.OneSignal.promptForPushNotificationsWithUserResponse(function (accepted) {
+                console.log("User accepted notifications: " + accepted);
+            });
+
+            initialized = true;
+            return;
+        } catch (nativeError) {
+            console.error('Native OneSignal Init Error:', nativeError);
+        }
+    }
+
+    // Fallback to Web SDK
+    if (!import.meta.env.VITE_ONESIGNAL_APP_ID) {
+        console.log('No OneSignal App ID found');
         return;
     }
 
@@ -20,7 +59,7 @@ export const initOneSignal = async (userId) => {
         });
 
         initialized = true;
-        console.log('OneSignal initialized');
+        console.log('OneSignal Web SDK initialized');
 
         // Set external user ID (links OneSignal user to your user)
         if (userId) {
@@ -29,11 +68,10 @@ export const initOneSignal = async (userId) => {
         }
 
         // Request permission
-        const permission = await OneSignal.Notifications.requestPermission();
-        console.log('Notification permission:', permission);
+        await OneSignal.Notifications.requestPermission();
 
     } catch (error) {
-        console.error('OneSignal init error:', error);
+        console.error('OneSignal Web Init error:', error);
     }
 };
 
