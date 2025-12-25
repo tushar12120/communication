@@ -211,6 +211,15 @@ const Sidebar = ({ onSelectUser, selectedUser, isMobile = false }) => {
             onClick={() => setShowStatus(true)}
             title="Status"
           />
+          <Bell
+            size={22}
+            onClick={async () => {
+              await initOneSignal(user.id);
+              alert("Notification setup refreshed!");
+            }}
+            style={{ cursor: 'pointer', opacity: 0.85 }}
+            title="Enable Notifications"
+          />
           <MessageSquarePlus
             size={22}
             onClick={() => setShowAddContact(true)}
